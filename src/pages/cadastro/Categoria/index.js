@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PageDefault from '../../../components/PageDefault';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
+import useForm from '../../../hooks/useForm';
 
 function CadastroCategoria() {
   const valoresPadrao = {
@@ -11,27 +12,13 @@ function CadastroCategoria() {
     cor: '',
   };
 
+  const { handleChange, values, clearForm } = useForm(valoresPadrao);
   const [categorias, setCategorias] = useState([]);
-  const [values, setValues] = useState(valoresPadrao);
-
-  function setValue(key, value) {
-    setValues({
-      ...values,
-      [key]: value,
-    });
-  }
-
-  function handleChange(info) {
-    const { value } = info.target;
-
-    setValue(
-      info.target.getAttribute('name'),
-      value,
-    );
-  }
 
   useEffect(() => {
-    const URL_TOP = 'http://localhost:3333/categorias';
+    const URL_TOP = window.location.hostname.includes('localhost')
+      ? 'http://localhost:3333/categorias'
+      : 'https://edsuflix.herokuapp.com/categorias';
     fetch(URL_TOP)
       .then(async (response) => {
         const resposta = await response.json();
@@ -54,6 +41,8 @@ function CadastroCategoria() {
           ...categorias,
           values,
         ]);
+
+        clearForm();
       }}
       >
 
@@ -97,8 +86,8 @@ function CadastroCategoria() {
 
       <ul>
         {categorias.map((categoria) => (
-          <li key={`${categoria}`}>
-            {categoria.nome}
+          <li key={`${categoria.id}`}>
+            {categoria.titulo}
           </li>
         ))}
       </ul>
